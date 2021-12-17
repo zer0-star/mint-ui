@@ -1,7 +1,7 @@
 /* A toggle component. */
 component Ui.Toggle {
   /* The change event handler. */
-  property onChange : Function(Bool, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(Bool, Promise(Void)) = Promise.never1
 
   /* The size of the component. */
   property size : Ui.Size = Ui.Size::Inherit
@@ -44,11 +44,11 @@ component Ui.Toggle {
     display: inline-flex;
     align-items: center;
 
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
     font-weight: bold;
 
-    width: #{Ui.Size.toString(width)};
+    width: #{width.toString()};
     height: 2.375em;
 
     position: relative;
@@ -112,14 +112,14 @@ component Ui.Toggle {
   }
 
   /* Toggles the componnet. */
-  fun toggle : Promise(Never, Void) {
+  fun toggle : Promise(Void) {
     onChange(!checked)
   }
 
   /* Renders the component. */
   fun render : Html {
     <button::base
-      aria-checked={Bool.toString(checked)}
+      aria-checked={checked.toString()}
       disabled={disabled}
       onClick={toggle}
       role="checkbox">

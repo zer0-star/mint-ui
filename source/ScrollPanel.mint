@@ -28,12 +28,12 @@ component Ui.ScrollPanel {
   state clientSize : Number = 0
 
   use Provider.ElementSize {
-    element = Maybe.oneOf([horizontal, vertical]),
+    element = [horizontal, vertical].oneOf(),
     changes = recalculateFromSize
   }
 
   use Provider.Mutation {
-    element = Maybe.oneOf([horizontal, vertical]),
+    element = [horizontal, vertical].oneOf(),
     changes = recalculate
   }
 
@@ -162,7 +162,7 @@ component Ui.ScrollPanel {
       padding-right: #{extraPadding}px;
     }
 
-    @supports (-moz-appearance:none) {
+    @supports (-moz-appearance: none) {
       if (scrollSize != clientSize) {
         padding-right: calc(12px + #{extraPadding}px);
       }
@@ -173,43 +173,25 @@ component Ui.ScrollPanel {
   This is needed to be a separate function so the provider doesn't re-subscribe
   every update.
   */
-  fun recalculateFromSize (dimensions : Dom.Dimensions) : Promise(Never, Void) {
+  fun recalculateFromSize (dimensions : Dom.Dimensions) : Promise(Void) {
     recalculate()
   }
 
   /* Sets the state variables from the current state of the element. */
-  fun recalculate : Promise(Never, Void) {
+  fun recalculate : Promise(Void) {
     if (orientation == "horizontal") {
       next
         {
-          scrollPosition =
-            horizontal
-            |> Maybe.map(Dom.getScrollLeft)
-            |> Maybe.withDefault(0),
-          clientSize =
-            horizontal
-            |> Maybe.map(Dom.getClientWidth)
-            |> Maybe.withDefault(0),
-          scrollSize =
-            horizontal
-            |> Maybe.map(Dom.getScrollWidth)
-            |> Maybe.withDefault(0)
+          scrollPosition = horizontal.map(Dom.getScrollLeft) or 0,
+          clientSize = horizontal.map(Dom.getClientWidth) or 0,
+          scrollSize = horizontal.map(Dom.getScrollWidth) or 0
         }
     } else {
       next
         {
-          scrollPosition =
-            vertical
-            |> Maybe.map(Dom.getScrollTop)
-            |> Maybe.withDefault(0),
-          clientSize =
-            vertical
-            |> Maybe.map(Dom.getClientHeight)
-            |> Maybe.withDefault(0),
-          scrollSize =
-            vertical
-            |> Maybe.map(Dom.getScrollHeight)
-            |> Maybe.withDefault(0)
+          scrollPosition = vertical.map(Dom.getScrollTop) or 0,
+          clientSize = vertical.map(Dom.getClientHeight) or 0,
+          scrollSize = vertical.map(Dom.getScrollHeight) or 0
         }
     }
   }

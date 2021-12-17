@@ -5,7 +5,7 @@ A simple tabs component.
 */
 component Ui.Tabs {
   /* The change event handler. */
-  property onChange : Function(String, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(String, Promise(Void)) = Promise.never1
 
   /* The size of the component. */
   property size : Ui.Size = Ui.Size::Inherit
@@ -33,8 +33,8 @@ component Ui.Tabs {
     background: var(--content-color);
     color: var(--content-text);
 
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
 
     grid-template-rows: min-content 1fr;
     overflow: hidden;
@@ -141,7 +141,7 @@ component Ui.Tabs {
   }
 
   /* The event handler for the tab select. */
-  fun handleSelect (key : String) : Promise(Never, Void) {
+  fun handleSelect (key : String) : Promise(Void) {
     if (key == active) {
       next { }
     } else {
@@ -152,13 +152,13 @@ component Ui.Tabs {
   /* Renders a tabs contents. */
   fun renderTab (tab : Ui.Tab) {
     <div::tab-inner>
-      if (Html.isNotEmpty(tab.iconBefore)) {
+      if (tab.iconBefore.isNotEmpty()) {
         <Ui.Icon icon={tab.iconBefore}/>
       }
 
       <{ tab.label }>
 
-      if (Html.isNotEmpty(tab.iconAfter)) {
+      if (tab.iconAfter.isNotEmpty()) {
         <Ui.Icon icon={tab.iconAfter}/>
       }
     </div>
@@ -168,31 +168,29 @@ component Ui.Tabs {
   fun render : Html {
     <div::base as base>
       if (mobile) {
-        try {
-          navItems =
-            for (tab of items) {
-              Ui.NavItem::Item(
-                action = (event : Html.Event) { handleSelect(tab.key) },
-                iconBefore = tab.iconBefore,
-                iconAfter = tab.iconAfter,
-                label = tab.label)
-            }
+        navItems =
+          for (tab of items) {
+            Ui.NavItem::Item(
+              action = (event : Html.Event) { handleSelect(tab.key) },
+              iconBefore = tab.iconBefore,
+              iconAfter = tab.iconAfter,
+              label = tab.label)
+          }
 
-          <button::button-reset::button-mobile>
-            <div::mobile onClick={() { Ui.ActionSheet.show(navItems) }}>
-              <{
-                items
-                |> Array.find((tab : Ui.Tab) { tab.key == active })
-                |> Maybe.map(renderTab)
-                |> Maybe.withDefault(<></>)
-              }>
+        <button::button-reset::button-mobile>
+          <div::mobile onClick={() { Ui.ActionSheet.show(navItems) }}>
+            <{
+              items
+                .find((tab : Ui.Tab) { tab.key == active })
+                .map(renderTab)
+                .withDefault(<></>)
+            }>
 
-              <Ui.Icon
-                icon={Ui.Icons:CHEVRON_DOWN}
-                size={Ui.Size::Em(1.5)}/>
-            </div>
-          </button>
-        }
+            <Ui.Icon
+              icon={Ui.Icons:CHEVRON_DOWN}
+              size={Ui.Size::Em(1.5)}/>
+          </div>
+        </button>
       } else {
         <div::tabs>
           for (tab of items) {
@@ -206,9 +204,9 @@ component Ui.Tabs {
       <div::content>
         <{
           items
-          |> Array.find((tab : Ui.Tab) { tab.key == active })
-          |> Maybe.map((tab : Ui.Tab) { tab.content })
-          |> Maybe.withDefault(<></>)
+            .find((tab : Ui.Tab) { tab.key == active })
+            .map((tab : Ui.Tab) { tab.content })
+            .withDefault(<></>)
         }>
       </div>
     </div>

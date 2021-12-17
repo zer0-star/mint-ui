@@ -1,7 +1,7 @@
 /* A sortable table component, which collapses into a definition list on small screens. */
 component Ui.Table {
   /* The handler for the order change event. */
-  property onOrderChange : Function(Tuple(String, String), Promise(Never, Void)) = Promise.never1
+  property onOrderChange : Function(Tuple(String, String), Promise(Void)) = Promise.never1
 
   /* The data for the rows. */
   property rows : Array(Tuple(String, Array(Ui.Cell))) = []
@@ -100,7 +100,7 @@ component Ui.Table {
     <div as base>
       if (mobile) {
         <Ui.DefinitionList
-          headers={Array.map(.label, headers)}
+          headers={headers.map(.label)}
           size={size}
           rows={rows}/>
       } else {
@@ -117,18 +117,16 @@ component Ui.Table {
 
           <tbody>
             for (row of rows) {
-              try {
-                {summary, cells} =
-                  row
+              {summary, cells} =
+                row
 
-                <tr>
-                  for (cell of cells) {
-                    <td>
-                      <Ui.Cell cell={cell}/>
-                    </td>
-                  }
-                </tr>
-              }
+              <tr>
+                for (cell of cells) {
+                  <td>
+                    <Ui.Cell cell={cell}/>
+                  </td>
+                }
+              </tr>
             }
           </tbody>
         </table>

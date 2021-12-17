@@ -1,7 +1,7 @@
 /* A select component using the native `select` element. */
 component Ui.Native.Select {
   /* The change event handler. */
-  property onChange : Function(String, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(String, Promise(Void)) = Promise.never1
 
   /* The size of the select. */
   property size : Ui.Size = Ui.Size::Inherit
@@ -26,8 +26,8 @@ component Ui.Native.Select {
 
   /* Styles for the element. */
   style element {
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
     line-height: 1;
 
     border-radius: 0.375em;
@@ -99,9 +99,7 @@ component Ui.Native.Select {
 
   /* The change event handler. */
   fun handleChange (event : Html.Event) {
-    event.target
-    |> Dom.getValue
-    |> onChange
+    onChange(event.target.getValue())
   }
 
   /* The focus event handler. */
@@ -116,54 +114,52 @@ component Ui.Native.Select {
 
   /* Renders the select. */
   fun render : Html {
-    try {
-      label =
-        items
-        |> Array.find((item : Ui.ListItem) { Ui.ListItem.key(item) == value })
-        |> Maybe.map(
-          (item : Ui.ListItem) {
-            <div>
-              <{ Ui.ListItem.content(item) }>
-            </div>
-          })
-        |> Maybe.withDefault(
-          <div::placeholder>
-            <{ placeholder }>
-          </div>)
+    label =
+      items
+        .find((item : Ui.ListItem) { Ui.ListItem.key(item) == value })
+        .map(
+        (item : Ui.ListItem) {
+          <div>
+            <{ Ui.ListItem.content(item) }>
+          </div>
+        })
+        .withDefault(
+        <div::placeholder>
+          <{ placeholder }>
+        </div>)
 
-      grid =
-        <div::grid>
-          <{ label }>
+    grid =
+      <div::grid>
+        <{ label }>
 
-          <Ui.Icon icon={Ui.Icons:CHEVRON_DOWN}/>
-        </div>
-
-      <div::element as element>
-        <select::select
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          disabled={disabled}
-          value={value}>
-
-          for (item of items) {
-            case (item) {
-              Ui.ListItem::Divider =>
-                <option
-                  disabled={true}
-                  label="─────────────"/>
-
-              Ui.ListItem::Item(content, key) =>
-                <option value={key}>
-                  <{ content }>
-                </option>
-            }
-          }
-
-        </select>
-
-        <{ grid }>
+        <Ui.Icon icon={Ui.Icons:CHEVRON_DOWN}/>
       </div>
-    }
+
+    <div::element as element>
+      <select::select
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        disabled={disabled}
+        value={value}>
+
+        for (item of items) {
+          case (item) {
+            Ui.ListItem::Divider =>
+              <option
+                disabled={true}
+                label="─────────────"/>
+
+            Ui.ListItem::Item(content, key) =>
+              <option value={key}>
+                <{ content }>
+              </option>
+          }
+        }
+
+      </select>
+
+      <{ grid }>
+    </div>
   }
 }

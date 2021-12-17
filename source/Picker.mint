@@ -3,7 +3,7 @@ component Ui.Picker {
   connect Ui exposing { mobile }
 
   /* A handler for the keydown event if the picker is open or focused. */
-  property onKeyDown : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onKeyDown : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* A handler for the enter event, if it returns true the picker is closed. */
   property onEnter : Function(Html.Event, Bool) = (event : Html.Event) { true }
@@ -48,7 +48,11 @@ component Ui.Picker {
   }
 
   use Provider.OutsideClick {
-    elements = [element, Maybe.flatten(dropdown&.base)],
+    elements =
+      [
+        dropdown.map((item : Ui.Dropdown.Panel) { item.base }).flatten(),
+        element
+      ],
     clicks = handleClicks
   } when {
     (status == Ui.Picker.Status::Focused ||
@@ -63,41 +67,35 @@ component Ui.Picker {
   }
 
   /* Handles the up events. */
-  fun handleClicks : Promise(Never, Void) {
+  fun handleClicks : Promise(Void) {
     next { status = Ui.Picker.Status::Idle }
   }
 
   /* Handler for the tab in event. */
-  fun handleTabIn : Promise(Never, Void) {
+  fun handleTabIn : Promise(Void) {
     next { status = Ui.Picker.Status::Focused }
   }
 
   /* Handler for the close event. */
-  fun handleClose : Promise(Never, Void) {
+  fun handleClose : Promise(Void) {
     next { status = Ui.Picker.Status::Idle }
   }
 
   /* Hides the dropdown. */
-  fun hideDropdown : Promise(Never, Void) {
+  fun hideDropdown : Promise(Void) {
     next { status = Ui.Picker.Status::Focused }
   }
 
   /* Shows the dropdown. */
-  fun showDropdown : Promise(Never, Void) {
+  fun showDropdown : Promise(Void) {
     next { status = Ui.Picker.Status::Open }
   }
 
   /* Handler for the focus event (shows the dropdown). */
-  fun handleFocus (event : Html.Event) : Promise(Never, Void) {
-    sequence {
-      next { status = Ui.Picker.Status::Focused }
-
-      sequence {
-        Timer.nextFrame("")
-
-        next { status = Ui.Picker.Status::Open }
-      }
-    }
+  fun handleFocus (event : Html.Event) : Promise(Void) {
+    await next { status = Ui.Picker.Status::Focused }
+    await Timer.nextFrame("")
+    await next { status = Ui.Picker.Status::Open }
   }
 
   /*
@@ -119,7 +117,7 @@ component Ui.Picker {
         }
 
       Html.Event:SPACE =>
-        try {
+        {
           Html.Event.preventDefault(event)
           showDropdown()
         }
@@ -202,57 +200,55 @@ component Ui.Picker {
 
   /* Renders the component. */
   fun render : Html {
-    try {
-      content =
-        <Ui.Dropdown.Panel as dropdown size={size}>
-          <{ panel }>
-        </Ui.Dropdown.Panel>
+    content =
+      <Ui.Dropdown.Panel as dropdown size={size}>
+        <{ panel }>
+      </Ui.Dropdown.Panel>
 
-      grid =
-        <div::grid>
-          <{
-            Maybe.withDefault(
-              <div::placeholder>
-                <{ placeholder }>
-              </div>,
-              label)
-          }>
+    grid =
+      <div::grid>
+        <{
+          Maybe.withDefault(
+            <div::placeholder>
+              <{ placeholder }>
+            </div>,
+            label)
+        }>
 
-          if (Html.isNotEmpty(icon)) {
-            <Ui.Icon icon={icon}/>
-          } else {
-            <></>
-          }
-        </div>
-
-      html =
-        if (disabled) {
-          <div::element>
-            <{ grid }>
-          </div>
+        if (Html.isNotEmpty(icon)) {
+          <Ui.Icon icon={icon}/>
         } else {
-          <div::element as element
-            onMouseUp={handleFocus}
-            tabindex="0">
-
-            <{ grid }>
-
-          </div>
+          <></>
         }
+      </div>
 
-      /*
-      The onClick handler is needed to focus the element when clicking
-      into the dropdown so it not loses focus.
-      */
-      <Ui.Dropdown
-        onClose={handleClose}
-        closeOnOutsideClick={true}
-        matchWidth={matchWidth}
-        position={position}
-        content={content}
-        offset={offset}
-        element={html}
-        open={open}/>
-    }
+    html =
+      if (disabled) {
+        <div::element>
+          <{ grid }>
+        </div>
+      } else {
+        <div::element as element
+          onMouseUp={handleFocus}
+          tabindex="0">
+
+          <{ grid }>
+
+        </div>
+      }
+
+    /*
+    The onClick handler is needed to focus the element when clicking
+    into the dropdown so it not loses focus.
+    */
+    <Ui.Dropdown
+      onClose={handleClose}
+      closeOnOutsideClick={true}
+      matchWidth={matchWidth}
+      position={position}
+      content={content}
+      offset={offset}
+      element={html}
+      open={open}/>
   }
 }

@@ -1,10 +1,10 @@
 /* A simple calendar component where the days can be selected. */
 component Ui.Calendar {
   /* The month change event handler. */
-  property onMonthChange : Function(Time, Promise(Never, Void)) = Promise.never1
+  property onMonthChange : Function(Time, Promise(Void)) = Promise.never1
 
   /* The change event handler. */
-  property onChange : Function(Time, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(Time, Promise(Void)) = Promise.never1
 
   /* The days to highlight as selected. */
   property selectedDays : Set(Time) = Set.empty()
@@ -35,8 +35,8 @@ component Ui.Calendar {
     -moz-user-select: none;
     user-select: none;
 
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
 
     grid-gap: 1em;
     display: grid;
@@ -103,25 +103,23 @@ component Ui.Calendar {
   }
 
   /* Event handler for the cell click. */
-  fun handleCellClick (day : Time) : Promise(Never, Void) {
-    if (changeMonthOnSelect && Time.month(day) != Time.month(month)) {
-      sequence {
-        onMonthChange(Time.startOf("month", day))
-        onChange(day)
-      }
+  fun handleCellClick (day : Time) : Promise(Void) {
+    if (changeMonthOnSelect && day.month() != month.month()) {
+      await onMonthChange(day.startOf("month"))
+      await onChange(day)
     } else {
       onChange(day)
     }
   }
 
   /* Event handler for the chevron left icon click. */
-  fun handleChevronLeftClick (event : Html.Event) : Promise(Never, Void) {
-    onMonthChange(Time.startOf("month", Time.previousMonth(month)))
+  fun handleChevronLeftClick (event : Html.Event) : Promise(Void) {
+    onMonthChange(month.previousMonth().startOf("month"))
   }
 
   /* Event handler for the chevron right icon click. */
-  fun handleChevronRightClick (event : Html.Event) : Promise(Never, Void) {
-    onMonthChange(Time.startOf("month", Time.nextMonth(month)))
+  fun handleChevronRightClick (event : Html.Event) : Promise(Void) {
+    onMonthChange(month.nextMonth().startOf("month"))
   }
 
   /* Renders the component. */
@@ -135,7 +133,7 @@ component Ui.Calendar {
           interactive={true}/>
 
         <div::text>
-          <{ Time.format("MMMM - yyyy", month) }>
+          <{ month.format("MMMM - yyyy") }>
         </div>
 
         <Ui.Icon
@@ -146,68 +144,61 @@ component Ui.Calendar {
       </div>
 
       <div::dayNames>
-        try {
-          range =
-            Time.range(Time.startOf("week", day), Time.endOf("week", day))
+        <{
+          {
+            range =
+              Time.range(day.startOf("week"), day.endOf("week"))
 
-          for (day of range) {
-            <div::dayName>
-              <{ Time.format("eee", day) }>
-            </div>
+            for (day of range) {
+              <div::dayName>
+                <{ day.format("eee") }>
+              </div>
+            }
           }
-        }
+        }>
       </div>
 
       <div::table>
-        try {
-          startDate =
-            month
-            |> Time.startOf("month")
-            |> Time.startOf("week")
+        <{
+          {
+            startDate =
+              month.startOf("month").startOf("week")
 
-          endDate =
-            month
-            |> Time.endOf("month")
-            |> Time.endOf("week")
+            endDate =
+              month.endOf("month").endOf("week")
 
-          days =
-            Time.range(startDate, endDate)
+            days =
+              Time.range(startDate, endDate)
 
-          range =
-            Time.endOf("month", month)
-            |> Time.range(Time.startOf("month", month))
+            range =
+              Time.range(month.startOf("month"), month.endOf("month"))
 
-          actualDays =
-            case (Array.size(days)) {
-              28 =>
-                Time.range(
-                  Time.previousWeek(startDate),
-                  Time.nextWeek(endDate))
+            actualDays =
+              case (Array.size(days)) {
+                28 =>
+                  Time.range(startDate.previousWeek(), endDate.nextWeek())
 
-              35 =>
-                Time.range(
-                  startDate,
-                  Time.nextWeek(endDate))
+                35 =>
+                  Time.range(startDate, endDate.nextWeek())
 
-              => days
-            }
+                => days
+              }
 
-          for (cell of actualDays) {
-            try {
+            for (cell of actualDays) {
               normalizedDay =
-                Time.startOf("day", day)
+                day.startOf("day")
 
               normalizedCell =
-                Time.startOf("day", cell)
+                cell.startOf("day")
 
               normalizedDays =
-                Set.map(Time.startOf("day"), selectedDays)
+                selectedDays.map((time : Time) { time.startOf("day") })
 
               selected =
                 if (Set.size(normalizedDays) == 0) {
                   normalizedDay == normalizedCell
                 } else {
-                  Set.has(normalizedCell, normalizedDays)
+                  normalizedDays.has(normalizedCell)
                 }
 
               <Ui.Calendar.Cell
@@ -218,7 +209,7 @@ component Ui.Calendar {
                 readonly={readonly}/>
             }
           }
-        }
+        }>
       </div>
     </div>
   }

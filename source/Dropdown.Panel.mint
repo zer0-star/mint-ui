@@ -24,8 +24,8 @@ component Ui.Dropdown.Panel {
     background: var(--content-color);
     color: var(--content-text);
 
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
   }
 
   /* Styles for the title. */
@@ -49,7 +49,7 @@ component Ui.Dropdown.Panel {
   /* Renders the panel. */
   fun render : Html {
     <div::base as base>
-      if (Html.isNotEmpty(title)) {
+      if (title.isNotEmpty()) {
         <div::title>
           <{ title }>
         </div>

@@ -54,15 +54,6 @@ component Ui.StickyPanel {
     dimensions : Dom.Dimensions,
     panel : Dom.Dimensions
   ) : Dom.Dimensions {
-    { panel |
-      bottom = top + panel.height,
-      right = left + panel.width,
-      left = left,
-      top = top,
-      x = left,
-      y = top
-    }
-  } where {
     top =
       case (position) {
         Ui.Position::BottomCenter => dimensions.bottom + offset
@@ -100,24 +91,24 @@ component Ui.StickyPanel {
         Ui.Position::LeftBottom => dimensions.left - panel.width - offset
         Ui.Position::LeftTop => dimensions.left - panel.width - offset
       }
+
+    { panel |
+      bottom = top + panel.height,
+      right = left + panel.width,
+      left = left,
+      top = top,
+      x = left,
+      y = top
+    }
   }
 
   /* Calculates the position of the panel. */
-  fun updateDimensions (timestamp : Number) : Promise(Never, Void) {
-    next
-      {
-        left = finalPosition.left,
-        top = finalPosition.top
-      }
-  } where {
+  fun updateDimensions (timestamp : Number) : Promise(Void) {
     panelDimensions =
-      panel
-      |> Maybe.withDefault(DUMMY)
-      |> Dom.getDimensions()
+      (panel or DUMMY).getDimensions()
 
     dimensions =
-      `this.base`
-      |> Dom.getDimensions()
+      (`this.base` as Dom.Element).getDimensions()
 
     favoredPosition =
       calculatePosition(position, dimensions, panelDimensions)
@@ -126,19 +117,23 @@ component Ui.StickyPanel {
       if (Ui.isFullyVisible(favoredPosition)) {
         favoredPosition
       } else {
-        try {
-          inversePosition =
-            calculatePosition(
-              Ui.Position.inverse(position),
-              dimensions,
-              panelDimensions)
+        inversePosition =
+          calculatePosition(
+            position.inverse(),
+            dimensions,
+            panelDimensions)
 
-          if (Ui.isFullyVisible(inversePosition)) {
-            inversePosition
-          } else {
-            favoredPosition
-          }
+        if (Ui.isFullyVisible(inversePosition)) {
+          inversePosition
+        } else {
+          favoredPosition
         }
+      }
+
+    next
+      {
+        left = finalPosition.left,
+        top = finalPosition.top
       }
   }
 

@@ -10,7 +10,7 @@ component Ui.NavItem {
 
   /* Styles for a row. */
   style row {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     line-height: 1.7;
 
     grid-auto-flow: column;
@@ -75,13 +75,13 @@ component Ui.NavItem {
   /* Renders the contents of an item. */
   fun renderContents (iconBefore : Html, iconAfter : Html, label : String) {
     <>
-      if (Html.isNotEmpty(iconBefore)) {
+      if (iconBefore.isNotEmpty()) {
         <Ui.Icon icon={iconBefore}/>
       }
 
       <{ label }>
 
-      if (Html.isNotEmpty(iconAfter)) {
+      if (iconAfter.isNotEmpty()) {
         <Ui.Icon icon={iconAfter}/>
       }
     </>

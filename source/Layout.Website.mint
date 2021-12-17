@@ -81,52 +81,47 @@ component Ui.Layout.Website {
       {breadcrumbs, "min-content"},
       {content, "1fr"},
       {footer, "min-content"}
-    ]
-    |> Array.map(
+    ].map(
       (item : Tuple(Html, String)) {
-        try {
-          {html, ratio} =
-            item
+        {html, ratio} =
+          item
 
-          if (Html.isNotEmpty(html)) {
-            Maybe::Just(ratio)
-          } else {
-            Maybe::Nothing
-          }
+        if (Html.isNotEmpty(html)) {
+          Maybe::Just(ratio)
+        } else {
+          Maybe::Nothing
         }
-      })
-    |> Array.compact
-    |> String.join(" ")
+      }).compact().join(" ")
   }
 
   /* Renders the component. */
   fun render : Html {
     <div::base>
-      if (Html.isNotEmpty(notification)) {
+      if (notification.isNotEmpty()) {
         <div>
           <{ notification }>
         </div>
       }
 
-      if (Html.isNotEmpty(header)) {
+      if (header.isNotEmpty()) {
         <div>
           <{ header }>
         </div>
       }
 
-      if (Html.isNotEmpty(breadcrumbs)) {
+      if (breadcrumbs.isNotEmpty()) {
         <div::breadcrumbs>
           <{ breadcrumbs }>
         </div>
       }
 
-      if (Html.isNotEmpty(content)) {
+      if (content.isNotEmpty()) {
         <div::content>
           <{ content }>
         </div>
       }
 
-      if (Html.isNotEmpty(footer)) {
+      if (footer.isNotEmpty()) {
         <div>
           <{ footer }>
         </div>

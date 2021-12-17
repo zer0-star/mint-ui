@@ -1,7 +1,7 @@
 /* A component to render SVG icons. */
 component Ui.Icon {
   /* The click event handler. */
-  property onClick : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onClick : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* The size of the icon. */
   property size : Ui.Size = Ui.Size::Inherit
@@ -23,7 +23,7 @@ component Ui.Icon {
 
   /* The styles for the icon. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     justify-content: center;
     display: inline-flex;
     align-items: center;
@@ -61,7 +61,7 @@ component Ui.Icon {
   }
 
   get actuallyInteractive {
-    (interactive || String.isNotBlank(href)) && !disabled
+    (interactive || href.isNotBlank()) && !disabled
   }
 
   /* The style for the link. */
@@ -84,20 +84,18 @@ component Ui.Icon {
   }
 
   fun render : Html {
-    try {
-      if (String.isNotBlank(href)) {
-        <a::base::link href={href}>
-          <{ icon }>
-        </a>
-      } else if (actuallyInteractive) {
-        <button::base::button onClick={Ui.disabledHandler(disabled, onClick)}>
-          <{ icon }>
-        </button>
-      } else {
-        <div::base onClick={Ui.disabledHandler(disabled, onClick)}>
-          <{ icon }>
-        </div>
-      }
+    if (href.isNotBlank()) {
+      <a::base::link href={href}>
+        <{ icon }>
+      </a>
+    } else if (actuallyInteractive) {
+      <button::base::button onClick={Ui.disabledHandler(disabled, onClick)}>
+        <{ icon }>
+      </button>
+    } else {
+      <div::base onClick={Ui.disabledHandler(disabled, onClick)}>
+        <{ icon }>
+      </div>
     }
   }
 }

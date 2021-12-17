@@ -7,13 +7,13 @@ It works in two modes:
 */
 component Ui.Button {
   /* The mouse down event handler. */
-  property onMouseDown : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onMouseDown : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* The mouse up event handler. */
-  property onMouseUp : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onMouseUp : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* The click event handler. */
-  property onClick : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onClick : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* Where to align the text in case the button is wide. */
   property align : String = "center"
@@ -58,8 +58,8 @@ component Ui.Button {
     border-radius: 0.375em;
     display: inline-block;
 
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
     font-weight: bold;
 
     box-sizing: border-box;
@@ -172,69 +172,65 @@ component Ui.Button {
   }
 
   /* Focuses the button. */
-  fun focus : Promise(Never, Void) {
-    [button, anchor]
-    |> Maybe.oneOf()
-    |> Dom.focus()
+  fun focus : Promise(Void) {
+    [button, anchor].oneOf().focus()
   }
 
   /* Renders the button. */
   fun render : Html {
-    try {
-      content =
-        <div::container>
-          <Ui.Container
-            gap={Ui.Size::Em(0.625)}
-            justify="start">
+    content =
+      <div::container>
+        <Ui.Container
+          gap={Ui.Size::Em(0.625)}
+          justify="start">
 
-            if (Html.isNotEmpty(iconBefore)) {
-              <Ui.Icon icon={iconBefore}/>
-            }
+          if (iconBefore.isNotEmpty()) {
+            <Ui.Icon icon={iconBefore}/>
+          }
 
-            if (String.isNotBlank(label)) {
-              <div::label>
-                <{ label }>
-              </div>
-            }
+          if (label.isNotBlank()) {
+            <div::label>
+              <{ label }>
+            </div>
+          }
 
-            if (Html.isNotEmpty(iconAfter)) {
-              <Ui.Icon icon={iconAfter}/>
-            }
+          if (iconAfter.isNotEmpty()) {
+            <Ui.Icon icon={iconAfter}/>
+          }
 
-          </Ui.Container>
-        </div>
+        </Ui.Container>
+      </div>
 
-      mouseDownHandler =
-        Ui.disabledHandler(disabled, onMouseDown)
+    mouseDownHandler =
+      Ui.disabledHandler(disabled, onMouseDown)
 
-      mouseUpHandler =
-        Ui.disabledHandler(disabled, onMouseUp)
+    mouseUpHandler =
+      Ui.disabledHandler(disabled, onMouseUp)
 
-      clickHandler =
-        Ui.disabledHandler(disabled, onClick)
+    clickHandler =
+      Ui.disabledHandler(disabled, onClick)
 
-      if (String.isNotBlank(href) && !disabled) {
-        <a::styles as anchor
-          onMouseDown={mouseDownHandler}
-          onMouseUp={mouseUpHandler}
-          onClick={clickHandler}
-          target={target}
-          href={href}>
+    if (href.isNotBlank() && !disabled) {
+      <a::styles as anchor
+        onMouseDown={mouseDownHandler}
+        onMouseUp={mouseUpHandler}
+        onClick={clickHandler}
+        target={target}
+        href={href}>
 
-          <{ content }>
+        <{ content }>
 
-        </a>
-      } else {
-        <button::styles as button
-          onMouseDown={mouseDownHandler}
-          onMouseUp={mouseUpHandler}
-          onClick={clickHandler}
-          disabled={disabled}>
+      </a>
+    } else {
+      <button::styles as button
+        onMouseDown={mouseDownHandler}
+        onMouseUp={mouseUpHandler}
+        onClick={clickHandler}
+        disabled={disabled}>
 
-          <{ content }>
+        <{ content }>
 
-        </button>
-      }
+      </button>
     }
   }
 }

@@ -38,146 +38,118 @@ component Ui.StickyPanel.Test {
 
 suite "Ui.StickyPanel" {
   test "fills the window correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test/>
-      |> start()
-      |> find("#base")
-      |> assertTop(0)
-      |> assertLeft(0)
-      |> assertWidth(500)
-      |> assertHeight(500)
-    }
+    <Ui.StickyPanel.Test/>
+      .start()
+      .find("#base")
+      .assertTop(0)
+      .assertLeft(0)
+      .assertWidth(500)
+      .assertHeight(500)
   }
 
   test "positions the element correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test/>
-      |> start()
-      |> find("#element")
-      |> assertTop(200)
-      |> assertLeft(200)
-      |> assertWidth(100)
-      |> assertHeight(100)
-    }
+    <Ui.StickyPanel.Test/>
+      .start()
+      .find("#element")
+      .assertTop(200)
+      .assertLeft(200)
+      .assertWidth(100)
+      .assertHeight(100)
   }
 
   test "positions the top-left correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(140)
-      |> assertLeft(200)
-    }
+    <Ui.StickyPanel.Test/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(140)
+      .assertLeft(200)
   }
 
   test "positions the top-right correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::TopRight}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(140)
-      |> assertLeft(250)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::TopRight}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(140)
+      .assertLeft(250)
   }
 
   test "positions the top-center correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::TopCenter}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(140)
-      |> assertLeft(225)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::TopCenter}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(140)
+      .assertLeft(225)
   }
 
   test "positions the bottom-left correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::BottomLeft}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(310)
-      |> assertLeft(200)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::BottomLeft}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(310)
+      .assertLeft(200)
   }
 
   test "positions the bottom-right correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::BottomRight}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(310)
-      |> assertLeft(250)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::BottomRight}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(310)
+      .assertLeft(250)
   }
 
   test "positions the bottom-center correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::BottomCenter}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(310)
-      |> assertLeft(225)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::BottomCenter}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(310)
+      .assertLeft(225)
   }
 
   test "positions the left-top correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::LeftTop}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(200)
-      |> assertLeft(140)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::LeftTop}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(200)
+      .assertLeft(140)
   }
 
   test "positions the left-center correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::LeftCenter}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(225)
-      |> assertLeft(140)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::LeftCenter}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(225)
+      .assertLeft(140)
   }
 
   test "positions the left-bottom correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::LeftBottom}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(250)
-      |> assertLeft(140)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::LeftBottom}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(250)
+      .assertLeft(140)
   }
 
   test "positions the right-top correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::RightTop}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(200)
-      |> assertLeft(310)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::RightTop}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(200)
+      .assertLeft(310)
   }
 
   test "positions the right-center correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::RightCenter}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(225)
-      |> assertLeft(310)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::RightCenter}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(225)
+      .assertLeft(310)
   }
 
   test "positions the right-bottom correctly" {
-    with Test.Html {
-      <Ui.StickyPanel.Test position={Ui.Position::RightBottom}/>
-      |> start()
-      |> findGlobally("#content")
-      |> assertTop(250)
-      |> assertLeft(310)
-    }
+    <Ui.StickyPanel.Test position={Ui.Position::RightBottom}/>
+      .start()
+      .findGlobally("#content")
+      .assertTop(250)
+      .assertLeft(310)
   }
 }

@@ -25,8 +25,8 @@ component Ui.Content {
 
   /* The styles for the contents. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
     text-align: #{textAlign};
     word-break: break-word;
     line-height: 1.7;

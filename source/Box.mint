@@ -50,7 +50,7 @@ component Ui.Box {
 
   /* Styles for the wrapper element. */
   style wrapper {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     grid-gap: 0.5em;
     display: grid;
 
@@ -61,26 +61,24 @@ component Ui.Box {
 
   /* Renders the box. */
   fun render {
-    try {
-      <div::wrapper>
-        if (Html.isNotEmpty(label)) {
-          <div::label>
-            <{ label }>
+    <div::wrapper>
+      if (label.isNotEmpty()) {
+        <div::label>
+          <{ label }>
+        </div>
+      }
+
+      <div::base>
+        if (title.isNotEmpty()) {
+          <div::title>
+            <{ title }>
           </div>
         }
 
-        <div::base>
-          if (Html.isNotEmpty(title)) {
-            <div::title>
-              <{ title }>
-            </div>
-          }
-
-          <Ui.Content fitContent={fitContent}>
-            <{ children }>
-          </Ui.Content>
-        </div>
+        <Ui.Content fitContent={fitContent}>
+          <{ children }>
+        </Ui.Content>
       </div>
-    }
+    </div>
   }
 }

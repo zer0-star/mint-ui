@@ -20,7 +20,7 @@ component Ui.Container {
 
   /* Styles for the base element. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
 
     justify-content: #{justify};
     align-items: #{align};
@@ -35,19 +35,15 @@ component Ui.Container {
 
   /* Styles for the gap. */
   style gap {
-    height: #{Ui.Size.toString(gap)};
-    width: #{Ui.Size.toString(gap)};
+    height: #{gap.toString()};
+    width: #{gap.toString()};
     flex: 0 0 auto;
   }
 
   /* Renders the component. */
   fun render : Html {
     <div::base>
-      <{
-        children
-        |> Html.flatten
-        |> Array.intersperse(<div::gap/>)
-      }>
+      <{ children.flatten().intersperse(<div::gap/>) }>
     </div>
   }
 }

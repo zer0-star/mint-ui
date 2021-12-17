@@ -52,7 +52,7 @@ global component Ui.Modal {
   }
 
   /* Shows the component with the given content. */
-  fun show (content : Html) : Promise(Ui.Modal.Cancelled, Void) {
+  fun show (content : Html) : Promise(Void) {
     showWithOptions(
       content,
       900,
@@ -70,68 +70,62 @@ global component Ui.Modal {
     content : Html,
     zIndex : Number,
     transitionDuration : Number,
-    openCallback : Function(Promise(Never, Void))
-  ) : Promise(Ui.Modal.Cancelled, Void) {
-    try {
-      {resolve, reject, promise} =
-        Promise.create()
+    openCallback : Function(Promise(Void))
+  ) : Promise(Void) {
+    {resolve, promise} =
+      Promise.create()
 
-      next
-        {
-          transitionDuration = transitionDuration,
-          focusedElement = Dom.getActiveElement(),
-          content = content,
-          resolve = resolve,
-          zIndex = zIndex,
-          reject = reject,
-          open = true
-        }
-
-      sequence {
-        Timer.timeout(transitionDuration, "")
-        openCallback()
+    next
+      {
+        transitionDuration = transitionDuration,
+        focusedElement = Dom.getActiveElement(),
+        content = content,
+        resolve = resolve,
+        zIndex = zIndex,
+        reject = reject,
+        open = true
       }
 
-      promise
+    {
+      await Timer.timeout(transitionDuration, "")
+      await openCallback()
     }
+
+    promise
   }
 
   /* Cancels the modal. */
-  fun cancel : Promise(Never, Void) {
-    sequence {
-      next { open = false }
+  fun cancel : Promise(Void) {
+    await next { open = false }
 
-      Timer.timeout(transitionDuration, "")
-      reject(`null` as Ui.Modal.Cancelled)
-      Dom.focus(focusedElement)
+    await Timer.timeout(transitionDuration, "")
+    await reject(`null` as Ui.Modal.Cancelled)
+    await Dom.focus(focusedElement)
 
-      next
-        {
-          reject = (error : Ui.Modal.Cancelled) { void },
-          resolve = (value : Void) { void },
-          focusedElement = Maybe::Nothing,
-          content = <{  }>
-        }
-    }
+    await next
+      {
+        reject = (error : Ui.Modal.Cancelled) { void },
+        resolve = (value : Void) { void },
+        focusedElement = Maybe::Nothing,
+        content = <{  }>
+      }
   }
 
   /* Hides the modal. */
-  fun hide : Promise(Never, Void) {
-    sequence {
-      next { open = false }
+  fun hide : Promise(Void) {
+    await next { open = false }
 
-      Timer.timeout(transitionDuration, "")
-      resolve(void)
-      Dom.focus(focusedElement)
+    await Timer.timeout(transitionDuration, "")
+    await resolve(void)
+    await Dom.focus(focusedElement)
 
-      next
-        {
-          reject = (error : Ui.Modal.Cancelled) { void },
-          resolve = (value : Void) { void },
-          focusedElement = Maybe::Nothing,
-          content = <{  }>
-        }
-    }
+    await next
+      {
+        reject = (error : Ui.Modal.Cancelled) { void },
+        resolve = (value : Void) { void },
+        focusedElement = Maybe::Nothing,
+        content = <{  }>
+      }
   }
 
   /* Renders the modal. */

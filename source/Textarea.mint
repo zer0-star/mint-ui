@@ -1,31 +1,31 @@
 /* A textarea component. */
 component Ui.Textarea {
   /* The `mousedown` event handler. */
-  property onMouseDown : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onMouseDown : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* The `mouseup` event handler. */
-  property onMouseUp : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onMouseUp : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* The `keydown` event handler. */
-  property onKeyDown : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onKeyDown : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* The `keyup` event handler. */
-  property onKeyUp : Function(Html.Event, Promise(Never, Void)) = Promise.never1
+  property onKeyUp : Function(Html.Event, Promise(Void)) = Promise.never1
 
   /* The `change` event handler. */
-  property onChange : Function(String, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(String, Promise(Void)) = Promise.never1
 
   /* The event handler when the user tabs out of the input. */
-  property onTabOut : Function(Promise(Never, Void)) = Promise.never
+  property onTabOut : Function(Promise(Void)) = Promise.never
 
   /* The event handler when the user tabs into the input. */
-  property onTabIn : Function(Promise(Never, Void)) = Promise.never
+  property onTabIn : Function(Promise(Void)) = Promise.never
 
   /* The `focus` event handler. */
-  property onFocus : Function(Promise(Never, Void)) = Promise.never
+  property onFocus : Function(Promise(Void)) = Promise.never
 
   /* The `blur` event handler. */
-  property onBlur : Function(Promise(Never, Void)) = Promise.never
+  property onBlur : Function(Promise(Void)) = Promise.never
 
   /*
   The behavior of the textarea, can be:
@@ -153,8 +153,8 @@ component Ui.Textarea {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     -webkit-touch-callout: none;
 
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
 
     min-height: 2.375em;
     line-height: 1.3em;
@@ -170,38 +170,32 @@ component Ui.Textarea {
   }
 
   /* Focuses the textarea. */
-  fun focus : Promise(Never, Void) {
-    Dom.focus(textarea)
+  fun focus : Promise(Void) {
+    textarea.focus()
   }
 
   /* Handles the `input` and `change` events. */
   fun handleChange (event : Html.Event) {
     if (inputDelay == 0) {
-      try {
-        next { currentValue = Maybe::Nothing }
+      next { currentValue = Maybe::Nothing }
 
-        onChange(Dom.getValue(event.target))
-      }
+      onChange(event.target.getValue())
     } else {
-      try {
-        {nextId, nextValue, promise} =
-          Ui.inputDelayHandler(timeoutId, inputDelay, event)
+      {nextId, nextValue, promise} =
+        Ui.inputDelayHandler(timeoutId, inputDelay, event)
 
-        next
-          {
-            currentValue = Maybe::Just(nextValue),
-            timeoutId = nextId
-          }
-
-        sequence {
-          /* Await the promise here. */
-          promise
-
-          onChange(Maybe.withDefault(value, currentValue))
-
-          next { currentValue = Maybe::Nothing }
+      next
+        {
+          currentValue = Maybe::Just(nextValue),
+          timeoutId = nextId
         }
-      }
+
+      await promise
+
+      /* TODO: Check if we need to await here */
+      await onChange(currentValue or value)
+
+      await next { currentValue = Maybe::Nothing }
     }
   }
 
@@ -211,54 +205,55 @@ component Ui.Textarea {
       case (behavior) {
         "grow" =>
           <div::common::mirror>
-            try {
-              /* Get the value as lines. */
-              lines =
-                currentValue
-                |> Maybe.withDefault(value)
-                |> String.split("\n")
+            <{
+              {
+                /* Get the value as lines. */
+                lines =
+                  currentValue
+                    .withDefault(value)
+                    .split("\n")
 
-              /*
-              We need to add an extra line because the mirror
-              won't grow in an empty line.
-              */
-              last =
-                Array.last(lines)
-                |> Maybe.map(
-                  (item : String) {
-                    if (String.isBlank(item)) {
-                      <>
-                        " "
-                      </>
-                    } else {
-                      <></>
-                    }
-                  })
-                |> Maybe.withDefault(<></>)
+                /*
+                We need to add an extra line because the mirror
+                won't grow in an empty line.
+                */
+                last =
+                  lines
+                    .last()
+                    .map(
+                    (item : String) {
+                      if (item.isBlank()) {
+                        <>" "</>
+                      } else {
+                        <></>
+                      }
+                    })
+                    .withDefault(<></>)
 
-              /* Map lines into spans spearated by line breaks. */
-              spans =
-                lines
-                |> Array.map(
-                  (line : String) : Html {
-                    <span>
-                      <{ line }>
-                    </span>
-                  })
-                |> Array.intersperse(<br/>)
+                /* Map lines into spans spearated by line breaks. */
+                spans =
+                  lines
+                    .map(
+                    (line : String) : Html {
+                      <span>
+                        <{ line }>
+                      </span>
+                    })
+                    .intersperse(<br/>)
 
-              <>
-                <{ spans }>
-                <{ last }>
-              </>
-            }
+                <>
+                  <{ spans }>
+                  <{ last }>
+                </>
+              }
+            }>
           </div>
 
         => <></>
       }
 
       <textarea::common::textarea as textarea
-        value={Maybe.withDefault(value, currentValue)}
+        value={currentValue or value}
         placeholder={placeholder}
         onMouseDown={onMouseDown}
         onChange={handleChange}

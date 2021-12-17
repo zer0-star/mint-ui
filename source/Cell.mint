@@ -10,7 +10,7 @@ component Ui.Cell {
 
   /* Styles for the base. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
   }
 
   /* Styles for the code. */
@@ -35,7 +35,7 @@ component Ui.Cell {
   fun render : Html {
     <div::base>
       case (cell) {
-        Ui.Cell::Number(value) => <{ Number.toString(value) }>
+        Ui.Cell::Number(value) => <{ value.toString() }>
         Ui.Cell::String(value) => <{ value }>
         Ui.Cell::Html(value) => value
 

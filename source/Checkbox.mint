@@ -1,7 +1,7 @@
 /* A simple checkbox component. */
 component Ui.Checkbox {
   /* The handler for the change event. */
-  property onChange : Function(Bool, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(Bool, Promise(Void)) = Promise.never1
 
   /* The size of the checkbox. */
   property size : Ui.Size = Ui.Size::Inherit
@@ -26,7 +26,7 @@ component Ui.Checkbox {
     padding: 0;
     border: 0;
 
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
 
     border: 0.0625em solid var(--input-border);
     border-radius: 0.375em;
@@ -67,19 +67,19 @@ component Ui.Checkbox {
   }
 
   /* Toggles the checkbox. */
-  fun toggle : Promise(Never, Void) {
+  fun toggle : Promise(Void) {
     onChange(!checked)
   }
 
   /* Focuses the checkbox. */
-  fun focus : Promise(Never, Void) {
-    Dom.focus(checkbox)
+  fun focus : Promise(Void) {
+    checkbox.focus()
   }
 
   /* Renders the checkbox. */
   fun render : Html {
     <button::base as checkbox
-      aria-checked={Bool.toString(checked)}
+      aria-checked={checked.toString()}
       disabled={disabled}
       onClick={toggle}
       role="checkbox">

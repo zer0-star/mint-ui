@@ -13,7 +13,7 @@ module Ui.Token {
   fun resolve (darkMode : Bool, token : Ui.Token) : Array(String) {
     case (token) {
       Ui.Token::Schemed(name, light, dark) =>
-        try {
+        {
           value =
             if (darkMode) {
               "var(--dark-#{name})"
@@ -37,14 +37,12 @@ module Ui.Token {
 
   /* Sets a given token. */
   fun setToken (token : Ui.Token, tokens : Array(Ui.Token)) : Array(Ui.Token) {
-    try {
-      name =
-        getName(token)
+    name =
+      getName(token)
 
-      tokens
-      |> Array.reject((item : Ui.Token) { getName(item) == name })
-      |> Array.push(token)
-    }
+    tokens
+      .reject((item : Ui.Token) { getName(item) == name })
+      .push(token)
   }
 
   /* Gets the name of the token. */
@@ -58,8 +56,8 @@ module Ui.Token {
   /* Resolves many tokens using the dark mode param. */
   fun resolveMany (darkMode : Bool, tokens : Array(Ui.Token)) : String {
     tokens
-    |> Array.flatMap(resolve(darkMode))
-    |> Array.sortBy((item : String) { item })
-    |> String.join(";\n")
+      .flatMap((token : Ui.Token) { resolve(darkMode, token) })
+      .sortBy((item : String) { item })
+      .join(";\n")
   }
 }

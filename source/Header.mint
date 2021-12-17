@@ -43,8 +43,8 @@ component Ui.Header {
 
   /* Styles for the base. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
 
     height: #{Ui.Size.toString(height)};
 
@@ -100,7 +100,7 @@ component Ui.Header {
   }
 
   /* The menu icon click handler. */
-  fun handleClick : Promise(Never, Void) {
+  fun handleClick : Promise(Void) {
     Ui.ActionSheet.show(items)
   }
 
@@ -156,7 +156,7 @@ component Ui.Header {
                 Ui.NavItem::Html(content) => content
 
                 Ui.NavItem::Group(iconBefore, iconAfter, label, items) =>
-                  try {
+                  {
                     key =
                       String.parameterize(label)
 

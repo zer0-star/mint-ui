@@ -3,7 +3,7 @@ component Ui.ImageCrop {
   connect Ui exposing { mobile }
 
   /* The `change` event handler. */
-  property onChange : Function(Ui.ImageCrop.Value, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(Ui.ImageCrop.Value, Promise(Void)) = Promise.never1
 
   /* The size of the component. */
   property size : Ui.Size = Ui.Size::Inherit
@@ -151,7 +151,7 @@ component Ui.ImageCrop {
   ) {
     case (direction) {
       Ui.ImageCrop.Direction::Backward =>
-        try {
+        {
           /* Clamp the distance to the minimum and maximum possible values. */
           clampedDistance =
             Math.clamp(
@@ -174,7 +174,7 @@ component Ui.ImageCrop {
         }
 
       Ui.ImageCrop.Direction::Forward =>
-        try {
+        {
           /* Clamp the distance to the minimum and maximum possible values. */
           clampedDistance =
             Math.clamp(
@@ -206,16 +206,16 @@ component Ui.ImageCrop {
   }
 
   /* Handles the move event. */
-  fun moves (event : Html.Event) : Promise(Never, Void) {
+  fun moves (event : Html.Event) : Promise(Void) {
     case (base) {
       Maybe::Just(element) =>
-        try {
+        {
           dimensions =
             Dom.getDimensions(element)
 
           case (status) {
             Ui.ImageCrop.Status::Dragging(directions, startValue, startEvent) =>
-              try {
+              {
                 /* Calculate the moved distance as a percentage of the image. */
                 distance =
                   {
@@ -258,17 +258,16 @@ component Ui.ImageCrop {
   }
 
   /* Handles the up event. */
-  fun ups (event : Html.Event) : Promise(Never, Void) {
+  fun ups (event : Html.Event) : Promise(Void) {
     next { status = Ui.ImageCrop.Status::Idle }
   }
 
   /* Starts the drag. */
   fun startDrag (
-    directions : Tuple(Ui.ImageCrop.Direction, Ui.ImageCrop.Direction),
-    event : Html.Event
+    directions : Tuple(Ui.ImageCrop.Direction, Ui.ImageCrop.Direction)
   ) {
-    try {
-      Html.Event.stopPropagation(event)
+    (event : Html.Event) {
+      event.stopPropagation()
 
       next
         {
@@ -283,33 +282,31 @@ component Ui.ImageCrop {
 
   /* Handles the keydown event. */
   fun handleKeyDown (event : Html.Event) {
-    try {
-      updatedValue =
-        case (event.keyCode) {
-          Html.Event:DOWN_ARROW =>
-            Maybe::Just({ value | y = Math.clamp(0, 1 - value.height, value.y + 0.005) })
+    updatedValue =
+      case (event.keyCode) {
+        Html.Event:DOWN_ARROW =>
+          Maybe::Just({ value | y = Math.clamp(0, 1 - value.height, value.y + 0.005) })
 
-          Html.Event:RIGHT_ARROW =>
-            Maybe::Just({ value | x = Math.clamp(0, 1 - value.width, value.x + 0.005) })
+        Html.Event:RIGHT_ARROW =>
+          Maybe::Just({ value | x = Math.clamp(0, 1 - value.width, value.x + 0.005) })
 
-          Html.Event:LEFT_ARROW =>
-            Maybe::Just({ value | x = Math.clamp(0, 1, value.x - 0.005) })
+        Html.Event:LEFT_ARROW =>
+          Maybe::Just({ value | x = Math.clamp(0, 1, value.x - 0.005) })
 
-          Html.Event:UP_ARROW =>
-            Maybe::Just({ value | y = Math.clamp(0, 1, value.y - 0.005) })
+        Html.Event:UP_ARROW =>
+          Maybe::Just({ value | y = Math.clamp(0, 1, value.y - 0.005) })
 
-          => Maybe::Nothing
+        => Maybe::Nothing
+      }
+
+    case (updatedValue) {
+      Maybe::Just(newValue) =>
+        {
+          Html.Event.preventDefault(event)
+          onChange(newValue)
         }
 
-      case (updatedValue) {
-        Maybe::Just(newValue) =>
-          try {
-            Html.Event.preventDefault(event)
-            onChange(newValue)
-          }
-
-        Maybe::Nothing => next { }
-      }
+      Maybe::Nothing => next { }
     }
   }
 

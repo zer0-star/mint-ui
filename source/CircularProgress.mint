@@ -23,7 +23,7 @@ component Ui.CircularProgress {
 
   /* Styles for the base element. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     display: inline-grid;
     height: #{width}em;
     width: #{width}em;
@@ -97,7 +97,7 @@ component Ui.CircularProgress {
     if (max == 0) {
       0
     } else {
-      Math.clamp(0, 1, current / max)
+      (current / max).clamp(0, 1)
     }
   }
 

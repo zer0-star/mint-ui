@@ -3,10 +3,10 @@ component Ui.ColorPanel {
   connect Ui exposing { darkMode }
 
   /* The `change` event handler. */
-  property onChange : Function(Color, Promise(Never, Void)) = Promise.never1
+  property onChange : Function(Color, Promise(Void)) = Promise.never1
 
   /* The `end` event handler. */
-  property onEnd : Function(Promise(Never, Void)) = Promise.never
+  property onEnd : Function(Promise(Void)) = Promise.never
 
   /* The value (color). */
   property value : Color = Color::HEX("000000FF")
@@ -53,7 +53,7 @@ component Ui.ColorPanel {
     display: grid;
     width: 15em;
 
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     user-select: none;
 
     if (embedded) {
@@ -172,14 +172,14 @@ component Ui.ColorPanel {
     height: 0.5em;
     width: 0.5em;
 
-    left: #{Color.getSaturation(value)}%;
-    top: #{100 - Color.getValue(value)}%;
+    left: #{value.getSaturation()}%;
+    top: #{100 - value.getValue()}%;
   }
 
   /* Style for the hue handle. */
   style hue-handle {
     transform: translate3d(0,0,0) translateY(-50%);
-    top: #{Color.getHue(value) / 360 * 100}%;
+    top: #{value.getHue() / 360 * 100}%;
     border-radius: 0.125em;
     right: -0.125em;
     left: -0.125em;
@@ -189,7 +189,7 @@ component Ui.ColorPanel {
   /* Style for the alpha handle. */
   style alpha-handle {
     transform: translate3d(0,0,0) translateX(-50%);
-    left: #{Color.getAlpha(value)}%;
+    left: #{value.getAlpha()}%;
     border-radius: 0.125em;
     bottom: -0.125em;
     top: -0.125em;
@@ -198,31 +198,22 @@ component Ui.ColorPanel {
 
   /* The computed value for the alpha gradient. */
   get alphaGradient : String {
-    try {
-      color =
-        value
-        |> Color.setAlpha(100)
-        |> Color.toCSSRGBA()
-
-      "linear-gradient(90deg, transparent, " + color + ")"
-    }
+    "linear-gradient(90deg, transparent, #{value.setAlpha(100).toCSSRGBA()})"
   }
 
   /* The pointer up event handler. */
-  fun ups (event : Html.Event) : Promise(Never, Void) {
-    sequence {
-      next { status = Ui.ColorPanel.Status::Idle }
-      onEnd()
-    }
+  fun ups (event : Html.Event) : Promise(Void) {
+    next { status = Ui.ColorPanel.Status::Idle }
+    onEnd()
   }
 
   /* The pointer move event handler. */
-  fun moves (event : Html.Event) : Promise(Never, Void) {
+  fun moves (event : Html.Event) : Promise(Void) {
     case (status) {
       Ui.ColorPanel.Status::ValueSaturationDragging(element) =>
-        try {
+        {
           dimensions =
-            Dom.getDimensions(element)
+            element.getDimensions()
 
           saturation =
             (event.pageX - `window.pageXOffset` - dimensions.left) / dimensions.width
@@ -234,40 +225,38 @@ component Ui.ColorPanel {
 
           nextValue =
             value
-            |> Color.setSaturation(saturation * 100)
-            |> Color.setValue((1 - val) * 100)
+              .setSaturation(saturation * 100)
+              .setValue((1 - val) * 100)
 
           onChange(nextValue)
         }
 
       Ui.ColorPanel.Status::HueDragging(element) =>
-        try {
+        {
           dimensions =
-            Dom.getDimensions(element)
+            element.getDimensions()
 
           hue =
             (event.pageY - `window.pageYOffset` - dimensions.top) / dimensions.height
             |> Math.clamp(0, 1)
 
           nextValue =
-            value
-            |> Color.setHue(hue * 360)
+            value.setHue(hue * 360)
 
           onChange(nextValue)
         }
 
       Ui.ColorPanel.Status::AlphaDragging(element) =>
-        try {
+        {
           dimensions =
-            Dom.getDimensions(element)
+            element.getDimensions()
 
           alpha =
             (event.pageX - `window.pageXOffset` - dimensions.left) / dimensions.width
             |> Math.clamp(0, 1)
 
           nextValue =
-            value
-            |> Color.setAlpha(Math.round(alpha * 100))
+            value.setAlpha(Math.round(alpha * 100))
 
           onChange(nextValue)
         }
@@ -278,134 +267,118 @@ component Ui.ColorPanel {
   }
 
   /* The pointer down event handler on the value-saturation square. */
-  fun handleRectPointerDown (event : Html.Event) : Promise(Never, Void) {
-    try {
-      Html.Event.preventDefault(event)
-      next { status = Ui.ColorPanel.Status::ValueSaturationDragging(event.target) }
-    }
+  fun handleRectPointerDown (event : Html.Event) : Promise(Void) {
+    event.preventDefault()
+    next { status = Ui.ColorPanel.Status::ValueSaturationDragging(event.target) }
   }
 
   /* The pointer down event handler on the hue bar. */
-  fun handleHuePointerDown (event : Html.Event) : Promise(Never, Void) {
-    try {
-      Html.Event.preventDefault(event)
-      next { status = Ui.ColorPanel.Status::HueDragging(event.target) }
-    }
+  fun handleHuePointerDown (event : Html.Event) : Promise(Void) {
+    event.preventDefault()
+    next { status = Ui.ColorPanel.Status::HueDragging(event.target) }
   }
 
   /* The pointer down event handler on the alpha bar. */
-  fun handleAlphaPointerDown (event : Html.Event) : Promise(Never, Void) {
-    try {
-      Html.Event.preventDefault(event)
-      next { status = Ui.ColorPanel.Status::AlphaDragging(event.target) }
-    }
+  fun handleAlphaPointerDown (event : Html.Event) : Promise(Void) {
+    event.preventDefault()
+    next { status = Ui.ColorPanel.Status::AlphaDragging(event.target) }
   }
 
   /* The change event handler for the hue input. */
-  fun handleHue (raw : String) : Promise(Never, Void) {
+  fun handleHue (raw : String) : Promise(Void) {
     next { hueString = Maybe::Just(raw) }
   }
 
   /* The blur event handler for the hue input. */
-  fun updateHue : Promise(Never, Void) {
-    sequence {
-      newHue =
-        hueString
-        |> Maybe.map(Number.fromString)
-        |> Maybe.flatten
-        |> Maybe.withDefault(0)
+  fun updateHue : Promise(Void) {
+    newHue =
+      hueString
+        .map(Number.fromString)
+        .flatten()
+        .withDefault(0)
 
-      newValue =
-        Color.setHue(newHue, value)
+    newValue =
+      value.setHue(newHue)
 
-      next { hueString = Maybe::Nothing }
-      onChange(newValue)
-    }
+    next { hueString = Maybe::Nothing }
+    onChange(newValue)
   }
 
   /* The change event handler for the value input. */
-  fun handleValue (raw : String) : Promise(Never, Void) {
+  fun handleValue (raw : String) : Promise(Void) {
     next { valueString = Maybe::Just(raw) }
   }
 
   /* The blur event handler for the value input. */
-  fun updateValue : Promise(Never, Void) {
-    sequence {
-      newValue =
-        valueString
-        |> Maybe.map(Number.fromString)
-        |> Maybe.flatten
-        |> Maybe.withDefault(0)
+  fun updateValue : Promise(Void) {
+    newValue =
+      valueString
+        .map(Number.fromString)
+        .flatten()
+        .withDefault(0)
 
-      nextValue =
-        Color.setValue(newValue, value)
+    nextValue =
+      value.setValue(newValue)
 
-      next { valueString = Maybe::Nothing }
-      onChange(nextValue)
-    }
+    next { valueString = Maybe::Nothing }
+    onChange(nextValue)
   }
 
   /* The change event handler for the saturation input. */
-  fun handleSaturation (raw : String) : Promise(Never, Void) {
+  fun handleSaturation (raw : String) : Promise(Void) {
     next { saturationString = Maybe::Just(raw) }
   }
 
   /* The blur event handler for the saturation input. */
-  fun updateSaturation : Promise(Never, Void) {
-    sequence {
-      saturation =
-        saturationString
-        |> Maybe.map(Number.fromString)
-        |> Maybe.flatten
-        |> Maybe.withDefault(0)
+  fun updateSaturation : Promise(Void) {
+    saturation =
+      saturationString
+        .map(Number.fromString)
+        .flatten()
+        .withDefault(0)
 
-      newValue =
-        Color.setSaturation(saturation, value)
+    newValue =
+      value.setSaturation(saturation)
 
-      next { saturationString = Maybe::Nothing }
-      onChange(newValue)
-    }
+    next { saturationString = Maybe::Nothing }
+    onChange(newValue)
   }
 
   /* The change event handler for the alpha input. */
-  fun handleAlpha (raw : String) : Promise(Never, Void) {
+  fun handleAlpha (raw : String) : Promise(Void) {
     next { alphaString = Maybe::Just(raw) }
   }
 
   /* The change event handler for the alpha input. */
-  fun updateAlpha : Promise(Never, Void) {
-    sequence {
-      alpha =
-        alphaString
-        |> Maybe.map(Number.fromString)
-        |> Maybe.flatten
-        |> Maybe.withDefault(0)
+  fun updateAlpha : Promise(Void) {
+    alpha =
+      alphaString
+        .map(Number.fromString)
+        .flatten()
+        .withDefault(0)
 
-      newValue =
-        Color.setAlpha(alpha, value)
+    newValue =
+      value.setAlpha(alpha)
 
-      next { alphaString = Maybe::Nothing }
-      onChange(newValue)
-    }
+    next { alphaString = Maybe::Nothing }
+    onChange(newValue)
   }
 
   /* The change event handler for the hex input. */
-  fun handleHex (raw : String) : Promise(Never, Void) {
+  fun handleHex (raw : String) : Promise(Void) {
     next { hexString = Maybe::Just(raw) }
   }
 
   /* The blur event handler for the hex input. */
-  fun updateHex : Promise(Never, Void) {
-    sequence {
-      newValue =
-        hexString
-        |> Maybe.map(Color.fromHEX)
-        |> Maybe.flatten
-        |> Maybe.withDefault(value)
+  fun updateHex : Promise(Void) {
+    newValue =
+      hexString
+        .map(Color.fromHEX)
+        .flatten()
+        .withDefault(value)
 
-      next { hexString = Maybe::Nothing }
-      onChange(newValue)
-    }
+    next { hexString = Maybe::Nothing }
+    onChange(newValue)
   }
 
   /* Renders the panel. */
@@ -428,7 +401,7 @@ component Ui.ColorPanel {
           <div::label>"HEX"</div>
 
           <Ui.Input
-            value={hexString or Color.toCSSHex(value)}
+            value={hexString or value.toCSSHex()}
             onChange={handleHex}
             onBlur={updateHex}/>
         </div>
@@ -437,7 +410,7 @@ component Ui.ColorPanel {
           <div::label>"H"</div>
 
           <Ui.Input
-            value={hueString or Number.toString(Math.round(Color.getHue(value)))}
+            value={hueString or value.getHue().round().toString()}
             onChange={handleHue}
             onBlur={updateHue}/>
         </div>
@@ -446,7 +419,7 @@ component Ui.ColorPanel {
           <div::label>"S"</div>
 
           <Ui.Input
-            value={saturationString or Number.toString(Math.round(Color.getSaturation(value)))}
+            value={saturationString or value.getSaturation().round().toString()}
             onChange={handleSaturation}
             onBlur={updateSaturation}/>
         </div>
@@ -455,7 +428,7 @@ component Ui.ColorPanel {
           <div::label>"V"</div>
 
           <Ui.Input
-            value={valueString or Number.toString(Math.round(Color.getValue(value)))}
+            value={valueString or value.getValue().round().toString()}
             onChange={handleValue}
             onBlur={updateValue}/>
         </div>
@@ -464,7 +437,7 @@ component Ui.ColorPanel {
           <div::label>"A"</div>
 
           <Ui.Input
-            value={alphaString or Number.toString(Color.getAlpha(value))}
+            value={alphaString or value.getAlpha().toString()}
             onChange={handleAlpha}
             onBlur={updateAlpha}/>
         </div>

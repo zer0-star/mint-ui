@@ -15,8 +15,8 @@ component Ui.RelativeTime {
 
   /* Renders the component. */
   fun render : Html {
-    <time::base title={Time.toIso(date)}>
-      <{ Time.relative(now, date) }>
+    <time::base title={date.toIso()}>
+      <{ date.relative(now) }>
     </time>
   }
 }

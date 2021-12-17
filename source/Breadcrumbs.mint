@@ -16,8 +16,8 @@ component Ui.Breadcrumbs {
 
   /* The style of the base element. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
     line-height: 1.2;
 
     align-items: center;
@@ -64,38 +64,34 @@ component Ui.Breadcrumbs {
     if (mobile) {
       <></>
     } else {
-      try {
-        content =
-          for (item of items) {
-            try {
-              {href, content} =
-                item
+      content =
+        for (item of items) {
+          {href, content} =
+            item
 
-              if (String.isBlank(href)) {
-                <span::breadcrumb aria-label="breadcrumb">
-                  <{ content }>
-                </span>
-              } else {
-                <a::breadcrumb::link
-                  aria-label="breadcrumb"
-                  href={href}>
+          if (href.isBlank()) {
+            <span::breadcrumb aria-label="breadcrumb">
+              <{ content }>
+            </span>
+          } else {
+            <a::breadcrumb::link
+              aria-label="breadcrumb"
+              href={href}>
 
-                  <{ content }>
+              <{ content }>
 
-                </a>
-              }
-            }
+            </a>
           }
+        }
 
-        span =
-          <span::separator aria-hidden="true">
-            <{ separator }>
-          </span>
+      span =
+        <span::separator aria-hidden="true">
+          <{ separator }>
+        </span>
 
-        <nav::base as base>
-          <{ Array.intersperse(span, content) }>
-        </nav>
-      }
+      <nav::base as base>
+        <{ content.intersperse(span) }>
+      </nav>
     }
   }
 }

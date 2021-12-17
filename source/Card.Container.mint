@@ -26,8 +26,8 @@ component Ui.Card.Container {
 
   /* Styles for the base element. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
     font-family: var(--font-family);
+    font-size: #{size.toString()};
     color: var(--content-text);
     text-align: #{textAlign};
 
@@ -80,23 +80,21 @@ component Ui.Card.Container {
   existence of the fields.
   */
   get rows : String {
-    try {
       size =
         [
-          Html.isNotEmpty(title),
-          Html.isNotEmpty(subtitle),
-          Html.isNotEmpty(content)
+          title.isNotEmpty(),
+          subtitle.isNotEmpty(),
+          content.isNotEmpty()
         ]
-        |> Array.select((item : Bool) { item })
-        |> Array.size()
+        .select((item : Bool) { item })
+        .size()
 
       "repeat(#{size}, auto)"
-    }
   }
 
   /* Returns whether or not to display an image. */
   get hasImage : Bool {
-    String.isNotBlank(thumbnail) || Html.isNotEmpty(image)
+    thumbnail.isNotBlank() || image.isNotEmpty()
   }
 
   /* Renders the component. */
@@ -104,7 +102,7 @@ component Ui.Card.Container {
     <div::base>
       if (hasImage) {
         <div::image>
-          if (Html.isNotEmpty(image)) {
+          if (image.isNotEmpty()) {
             image
           } else {
             <Ui.Image
@@ -115,19 +113,19 @@ component Ui.Card.Container {
         </div>
       }
 
-      if (Html.isNotEmpty(title)) {
+      if (title.isNotEmpty()) {
         <div::title>
           <{ title }>
         </div>
       }
 
-      if (Html.isNotEmpty(subtitle)) {
+      if (subtitle.isNotEmpty()) {
         <div::subtitle>
           <{ subtitle }>
         </div>
       }
 
-      if (Html.isNotEmpty(content)) {
+      if (content.isNotEmpty()) {
         <div::content>
           <Ui.Content>
             <{ content }>

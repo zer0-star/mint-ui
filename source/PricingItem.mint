@@ -23,8 +23,8 @@ component Ui.PricingItem {
 
   /* The styles for the base. */
   style base {
-    max-width: #{Ui.Size.toString(maxWidth)};
-    font-size: #{Ui.Size.toString(size)};
+    max-width: #{maxWidth.toString()};
+    font-size: #{size.toString()};
 
     background: var(--content-color);
     color: var(--content-text);
@@ -113,7 +113,7 @@ component Ui.PricingItem {
   /* Renders the component. */
   fun render : Html {
     <div::base>
-      if (Html.isNotEmpty(image)) {
+      if (image.isNotEmpty()) {
         <div::image>
           <{ image }>
         </div>
@@ -127,21 +127,19 @@ component Ui.PricingItem {
 
       case (price) {
         Maybe::Just(item) =>
-          try {
-            <div::price>
-              <div::currency>
-                <{ item[0] }>
-              </div>
-
-              <div::value>
-                <{ item[1] }>
-              </div>
-
-              <div::period>
-                <{ item[2] }>
-              </div>
+          <div::price>
+            <div::currency>
+              <{ item[0] }>
             </div>
-          }
+
+            <div::value>
+              <{ item[1] }>
+            </div>
+
+            <div::period>
+              <{ item[2] }>
+            </div>
+          </div>
 
         Maybe::Nothing =>
           <></>

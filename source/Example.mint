@@ -140,31 +140,29 @@ component Ui.Example {
 
   /* Renders the component. */
   fun render : Html {
-    try {
-      {content, code} =
-        data
+    {content, code} =
+      data
 
-      <div::base as base>
-        if (Html.isNotEmpty(warning)) {
-          <{ warning }>
-        }
+    <div::base as base>
+      if (warning.isNotEmpty()) {
+        <{ warning }>
+      }
 
-        <div::demo-area>
-          <div::demo-area-wrapper>
-            <{ content }>
-          </div>
-        </div>
-
-        if (Html.isNotEmpty(controls)) {
-          <div::controls>
-            <{ controls }>
-          </div>
-        }
-
-        <div::code>
-          <{ highlight(code) }>
+      <div::demo-area>
+        <div::demo-area-wrapper>
+          <{ content }>
         </div>
       </div>
-    }
+
+      if (controls.isNotEmpty()) {
+        <div::controls>
+          <{ controls }>
+        </div>
+      }
+
+      <div::code>
+        <{ highlight(code) }>
+      </div>
+    </div>
   }
 }

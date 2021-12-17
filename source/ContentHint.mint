@@ -17,7 +17,7 @@ component Ui.ContentHint {
   /* The styles for the base. */
   style base {
     box-shadow: 0 0 0.625em var(--shadow-color);
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     border-radius: 0.5em;
 
     grid-template-columns: auto 1fr;

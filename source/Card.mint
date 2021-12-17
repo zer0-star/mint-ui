@@ -1,7 +1,7 @@
 /* A Card is used to display data in sematically grouped way. */
 component Ui.Card {
   /* The click event handler. */
-  property onClick : Maybe(Function(Html.Event, Promise(Never, Void))) = Maybe::Nothing
+  property onClick : Maybe(Function(Html.Event, Promise(Void))) = Maybe::Nothing
 
   /* The minimum width of the card. */
   property minWidth : Ui.Size = Ui.Size::Px(0)
@@ -30,10 +30,10 @@ component Ui.Card {
     flex-direction: column;
     display: flex;
 
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     text-decoration: none;
 
-    min-width: #{Ui.Size.toString(minWidth)};
+    min-width: #{minWidth.toString()};
     outline: none;
 
     > *:first-child {
@@ -99,7 +99,7 @@ component Ui.Card {
 
   /* Renders the card. */
   fun render : Html {
-    if (String.isBlank(href)) {
+    if (href.isBlank()) {
       case (onClick) {
         Maybe::Just(handler) =>
           <button::common::button::focus onClick={handler}>

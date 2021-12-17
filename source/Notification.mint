@@ -73,30 +73,25 @@ component Ui.Notification {
   /* Returns the height of the component in pixels. */
   get height : Number {
     if (shown) {
-      base
-      |> Maybe.map(Dom.getDimensions)
-      |> Maybe.map(.height)
-      |> Maybe.withDefault(0)
+      base.map(Dom.getDimensions).map(.height) or "0"
     } else {
       0
     }
   }
 
   /* Runs when the component is mounted. */
-  fun componentDidMount : Promise(Never, Void) {
-    sequence {
-      /* Wait for the next frame so the component is rendered off-screen. */
-      Timer.nextFrame("")
-      next { shown = true }
+  fun componentDidMount : Promise(Void) {
+    /* Wait for the next frame so the component is rendered off-screen. */
+    await Timer.nextFrame("")
+    await next { shown = true }
 
-      /* Wait for the duration plus the transition duration and some extra. */
-      Timer.timeout(duration, "")
-      next { shown = false }
-    }
+    /* Wait for the duration plus the transition duration and some extra. */
+    await Timer.timeout(duration, "")
+    await next { shown = false }
   }
 
   /* The click event handler. */
-  fun handleClick : Promise(Never, Void) {
+  fun handleClick : Promise(Void) {
     next { shown = false }
   }
 

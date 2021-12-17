@@ -1,7 +1,7 @@
 /* This is a cell of the calendar component. */
 component Ui.Calendar.Cell {
   /* The click event. */
-  property onClick : Function(Time, Promise(Never, Void)) = Promise.never1
+  property onClick : Function(Time, Promise(Void)) = Promise.never1
 
   /* The size of the component. */
   property size : Ui.Size = Ui.Size::Inherit
@@ -23,7 +23,7 @@ component Ui.Calendar.Cell {
 
   /* Styles for the cell. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     border-radius: 0.25em;
 
     justify-content: center;
@@ -58,17 +58,17 @@ component Ui.Calendar.Cell {
   }
 
   /* The click event handler. */
-  fun handleClick (event : Html.Event) : Promise(Never, Void) {
+  fun handleClick (event : Html.Event) : Promise(Void) {
     onClick(day)
   }
 
   /* Renders the component. */
   fun render : Html {
     <div::base
-      title={Time.format("yyyy-MM-dd", day)}
+      title={day.format("yyyy-MM-dd")}
       onClick={handleClick}>
 
-      <{ Time.format("dd", day) }>
+      <{ day.format("dd") }>
 
     </div>
   }

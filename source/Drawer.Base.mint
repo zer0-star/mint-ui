@@ -6,7 +6,7 @@ Use this when you want to create a custom drawer.
 */
 component Ui.Drawer.Base {
   /* The close event handler. */
-  property onClose : Function(Promise(Never, Void)) = Promise.never
+  property onClose : Function(Promise(Void)) = Promise.never
 
   /* The duration of the transition. */
   property transitionDuration : Number = 240
@@ -84,7 +84,7 @@ component Ui.Drawer.Base {
   }
 
   /* Focuses the first focusable element in the drawer. */
-  fun focusFirst : Promise(Never, Void) {
+  fun focusFirst : Promise(Void) {
     drawer
     |> Maybe.map(Dom.focusFirst)
     |> Maybe.withDefault(Promise.never())

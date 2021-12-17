@@ -28,7 +28,7 @@ component Ui.ScrollToTop {
   /* Styles for the base. */
   style base {
     transition: transform 320ms, opacity 320ms;
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     z-index: #{zIndex};
 
     if (global) {
@@ -55,33 +55,31 @@ component Ui.ScrollToTop {
   }
 
   /* Updates the scroll position. */
-  fun updatePosition (event : Html.Event) : Promise(Never, Void) {
+  fun updatePosition (event : Html.Event) : Promise(Void) {
     next { scrollPosition = `window.scrollY` }
   }
 
   /* Scrolls to the top of the page. */
-  fun handleClick (event : Html.Event) : Promise(Never, Void) {
+  fun handleClick (event : Html.Event) : Promise(Void) {
     Window.setScrollTop(0)
   }
 
   /* Renders the component. */
   fun render : Html {
-    try {
-      base =
-        <div::base>
-          <Ui.FloatingButton
-            icon={Ui.Icons:CHEVRON_UP}
-            onClick={handleClick}
-            type="secondary"/>
-        </div>
+    base =
+      <div::base>
+        <Ui.FloatingButton
+          icon={Ui.Icons:CHEVRON_UP}
+          onClick={handleClick}
+          type="secondary"/>
+      </div>
 
-      if (global) {
-        <Html.Portals.Body>
-          <{ base }>
-        </Html.Portals.Body>
-      } else {
-        base
-      }
+    if (global) {
+      <Html.Portals.Body>
+        <{ base }>
+      </Html.Portals.Body>
+    } else {
+      base
     }
   }
 }

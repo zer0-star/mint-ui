@@ -12,7 +12,7 @@ component Ui.DarkModeToggle {
     -webkit-appearance: none;
     appearance: none;
 
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
 
     position: relative;
     background: none;

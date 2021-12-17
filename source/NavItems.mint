@@ -7,7 +7,7 @@ component Ui.NavItems {
 
   /* Styles for the component. */
   style base {
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     align-content: start;
     grid-gap: 0.25em;
     display: grid;

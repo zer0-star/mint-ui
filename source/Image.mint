@@ -84,16 +84,16 @@ component Ui.Image {
     if (fullHeight) {
       height: 100%;
     } else {
-      height: #{Ui.Size.toString(height)};
+      height: #{height.toString()};
     }
 
     if (fullWidth) {
       width: 100%;
     } else {
-      width: #{Ui.Size.toString(width)};
+      width: #{width.toString()};
     }
 
-    if (String.isBlank(borderRadius)) {
+    if (borderRadius.isBlank()) {
       border-radius: 0.15em;
     } else {
       border-radius: #{borderRadius};
@@ -101,14 +101,12 @@ component Ui.Image {
   }
 
   /* The load event handler. */
-  fun handleLoad : Promise(Never, Void) {
+  fun handleLoad : Promise(Void) {
     if (Set.has(src, images)) {
       next { }
     } else {
-      sequence {
-        setImageLoaded(src)
-        next { loaded = true }
-      }
+      await setImageLoaded(src)
+      await next { loaded = true }
     }
   }
 
@@ -117,7 +115,7 @@ component Ui.Image {
     if (draggable) {
       void
     } else {
-      Html.Event.preventDefault(event)
+      event.preventDefault()
     }
   }
 

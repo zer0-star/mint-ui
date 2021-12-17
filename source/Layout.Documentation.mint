@@ -163,7 +163,7 @@ component Ui.Layout.Documentation {
   fun updateToc {
     case (content) {
       Maybe::Just(element) =>
-        try {
+        {
           items =
             Dom.getElementsBySelector("a[name]", element)
 
@@ -178,7 +178,7 @@ component Ui.Layout.Documentation {
   }
 
   /* Handles the change event from the select. */
-  fun openActionSheet (event : Html.Event) : Promise(Never, Void) {
+  fun openActionSheet (event : Html.Event) : Promise(Void) {
     Ui.ActionSheet.show(items)
   }
 

@@ -25,8 +25,8 @@ component Ui.Modal.Content {
 
   /* Styles for the base element. */
   style base {
-    max-width: #{Ui.Size.toString(maxWidth)};
-    min-width: #{Ui.Size.toString(minWidth)};
+    max-width: #{maxWidth.toString()};
+    min-width: #{minWidth.toString()};
 
     box-shadow: 0 0 1.25em var(--shadow-color);
     border-radius: 0.375em;
@@ -113,7 +113,7 @@ component Ui.Modal.Content {
   fun render : Html {
     <div::base>
       <div::header>
-        if (Html.isNotEmpty(icon)) {
+        if (icon.isNotEmpty()) {
           <div::icon>
             <Ui.Icon
               size={Ui.Size::Em(1.375)}
@@ -135,7 +135,7 @@ component Ui.Modal.Content {
         <{ content }>
       </div>
 
-      if (Html.isNotEmpty(actions)) {
+      if (actions.isNotEmpty()) {
         <div::actions>
           <{ actions }>
         </div>

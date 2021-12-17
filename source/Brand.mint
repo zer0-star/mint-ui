@@ -20,7 +20,7 @@ component Ui.Brand {
     align-items: center;
     grid-gap: 0.5em;
 
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
     text-decoration: none;
     color: inherit;
     outline: none;
@@ -40,27 +40,25 @@ component Ui.Brand {
   }
 
   fun render : Html {
-    try {
-      content =
-        <>
-          if (Html.isNotEmpty(icon)) {
-            <Ui.Icon icon={icon}/>
-          }
+    content =
+      <>
+        if (icon.isNotEmpty()) {
+          <Ui.Icon icon={icon}/>
+        }
 
-          <div::name>
-            <{ name }>
-          </div>
-        </>
-
-      if (String.isEmpty(href)) {
-        <div::base href={href}>
-          <{ content }>
+        <div::name>
+          <{ name }>
         </div>
-      } else {
-        <a::base::link href={href}>
-          <{ content }>
-        </a>
-      }
+      </>
+
+    if (href.isEmpty()) {
+      <div::base href={href}>
+        <{ content }>
+      </div>
+    } else {
+      <a::base::link href={href}>
+        <{ content }>
+      </a>
     }
   }
 }

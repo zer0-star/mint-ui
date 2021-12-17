@@ -104,38 +104,36 @@ store Ui {
       "(max-width: 1000px)",
       (active : Bool) { next { mobile = active } })
 
-  fun toggleDarkMode : Promise(Never, Void) {
+  fun toggleDarkMode : Promise(Void) {
     setDarkMode(!darkMode)
   }
 
   /* Sets the dark mode state. */
-  fun setDarkMode (value : Bool) : Promise(Never, Void) {
-    try {
-      case (Storage.Local.set("ui.dark-mode", Bool.toString(value))) {
-        Result::Err => Debug.log("Could not save dark mode setting to LocalStorage!")
-        Result::Ok => ""
-      }
-
-      next { darkMode = value }
+  fun setDarkMode (value : Bool) : Promise(Void) {
+    case (Storage.Local.set("ui.dark-mode", Bool.toString(value))) {
+      Result::Err => Debug.log("Could not save dark mode setting to LocalStorage!")
+      Result::Ok => ""
     }
+
+    next { darkMode = value }
   }
 
   /* A function to not do anything based on a disabled argument. */
   fun disabledHandler (
     disabled : Bool,
-    handler : Function(a, Promise(Never, Void))
-  ) : Function(a, Promise(Never, Void)) {
+    handler : Function(a, Promise(Void))
+  ) : Function(a, Promise(Void)) {
     if (disabled) {
-      Promise.never1()
+      Promise.never1
     } else {
       handler
     }
   }
 
   /* A function to handle changes from input delay. */
-  fun inputDelayHandler (timeoutId : Number, delay : Number, event : Html.Event) : Tuple(Number, String, Promise(Never, Void)) {
-    try {
-      {resolve, reject, promise} =
+  fun inputDelayHandler (timeoutId : Number, delay : Number, event : Html.Event) : Tuple(Number, String, Promise(Void)) {
+    {
+      {resolve, promise} =
         Promise.create()
 
       value =
@@ -211,7 +209,7 @@ store Ui {
 
   TODO: Move to core library.
   */
-  fun scrollIntoViewIfNeeded (element : Dom.Element) : Promise(Never, Void) {
+  fun scrollIntoViewIfNeeded (element : Dom.Element) : Promise(Void) {
     if (isVisible(element)) {
       next { }
     } else {

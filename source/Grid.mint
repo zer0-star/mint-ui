@@ -20,10 +20,10 @@ component Ui.Grid {
   /* The styles for the grid. */
   style base {
     grid-template-columns: repeat(auto-fit, minmax(#{Ui.Size.toString(columnWidth)}, 1fr));
-    grid-gap: #{Ui.Size.toString(gap)};
+    grid-gap: #{gap.toString()};
     display: grid;
 
-    font-size: #{Ui.Size.toString(size)};
+    font-size: #{size.toString()};
   }
 
   get columnWidth : Ui.Size {
